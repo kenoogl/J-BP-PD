@@ -63,12 +63,14 @@ const KM_COEFFS = (
   +9.16384886e-07,
 )
 
-# x_shift: 接続距離 (基本基底: [1, I, C, I·C], R²=0.4674)
+# x_shift: 接続距離 (拡張基底: [1, I, C, I·C, 1/I, C/I], R²=0.9845)
 const X_SHIFT_COEFFS = (
-  +6.62159932e+00,
-  -1.97254894e+01,
-  -2.23566740e-02,
-  +7.39888239e-02,
+  +3.45683786e-01,
+  +5.32360649e+00,
+  +1.08584027e-01,
+  -4.38547128e-01,
+  +1.09449443e-01,
+  -1.85788857e-03,
 )
 
 # n だけは拡張基底 [1, I, Ct, I*Ct, 1/I, Ct/I, 1/I^2, Ct/I^2]
@@ -158,7 +160,7 @@ end
 - sigmaJ0: R²=0.94, RMSE=0.0021
 - sigmaG0: R²=0.98, RMSE=0.0061
 - km: R²=0.97, RMSE=0.0010
-- x_shift: R²=0.47, RMSE=2.02
+- x_shift: R²=0.98, RMSE=0.35
 """
 function coefficients_two_region(I::Real, Ct::Real; check_range::Bool=true)
     I_val = float(I)
@@ -170,7 +172,7 @@ function coefficients_two_region(I::Real, Ct::Real; check_range::Bool=true)
     sigmaJ0 = linear_combo(SIGMAJ0_COEFFS, I_val, Ct_val)
     sigmaG0 = linear_combo(SIGMAG0_COEFFS, I_val, Ct_val)
     km = extended_combo(KM_COEFFS, I_val, Ct_val)
-    x_shift = linear_combo(X_SHIFT_COEFFS, I_val, Ct_val)
+    x_shift = extended_combo(X_SHIFT_COEFFS, I_val, Ct_val)
 
     # 物理的制約
     kw = max(kw, 0.0)  # 非負

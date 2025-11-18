@@ -167,6 +167,87 @@ Phase 1 completed. Ready for Phase 2 (coefficient regression).
 - `src/compute_regression_coeffs.jl` - 回帰係数計算スクリプト
 - `src/test_coeff_model.jl` - テストスクリプト
 
+#### 2025-01-18: x_shift回帰精度改善（フェーズ2補足）
+
+**問題点**
+- x_shiftの回帰精度が著しく低い（R²=0.467, RMSE=2.024）
+- 基本基底 `[1, I, C, I·C]` では低I域の急増と高I域の飽和を表現できない
+- 接続距離の予測誤差が大きく、二領域モデルの精度に影響
+
+**改善案の検討**（codexに依頼）
+1. **非線形基底** `[1, I, C, I·C, 1/I, C/I]`: 期待R²≈0.985, RMSE≈0.35
+2. **区分モデル** (I<0.1で分割): 期待R²≈0.964, RMSE≈0.52
+3. 対数変換 log(x_shift): R²≈0.505（改善限定的）
+4. 片側ヒンジ基底: R²≈0.788
+5. 二次/混合多項式: R²≈0.755
+
+**比較検証**（`src/compare_xshift_models.jl`）
+```
+モデル                    R²      RMSE    改善率
+----------------------------------------------------
+現在（基本基底）        0.467   2.024     —
+案1: 非線形基底         0.985   0.345    82.9%  ⭐
+案2: 区分モデル         0.964   0.524    74.1%
+```
+
+**採用決定: 案1（非線形基底）**
+- 理由:
+  - 最高精度（R²=0.985）を達成
+  - 既存の `extended_combo` 関数を再利用可能
+  - 単一モデルで実装がシンプル
+  - 低乱流/高乱流どちらでも安定（RMSE≈0.34-0.35）
+
+**実施内容**
+1. X_SHIFT_COEFFS を6パラメータに拡張
+   ```julia
+   const X_SHIFT_COEFFS = (
+     +3.45683786e-01,  # const
+     +5.32360649e+00,  # I
+     +1.08584027e-01,  # C
+     -4.38547128e-01,  # I·C
+     +1.09449443e-01,  # 1/I
+     -1.85788857e-03,  # C/I
+   )
+   ```
+
+2. `coefficients_two_region` 関数を更新
+   ```julia
+   x_shift = extended_combo(X_SHIFT_COEFFS, I_val, Ct_val)
+   ```
+
+3. テスト結果
+   - 全パラメータが物理的制約を満たす ✓
+   - 平均絶対誤差（サンプル5ケース）: x_shift = 0.19 D（旧: 約2.0 D）
+   - **90%改善達成**
+
+**最終回帰精度サマリー**
+```
+Parameter   | R²     | RMSE   | 評価
+------------|--------|--------|----------
+Ct_eff      | 0.945  | 0.021  | 優秀 ✓
+sigmaJ0     | 0.942  | 0.002  | 優秀 ✓
+sigmaG0     | 0.976  | 0.006  | 優秀 ✓
+km          | 0.972  | 0.001  | 優秀 ✓
+kw          | 0.858  | 0.006  | 良好 ○
+x_shift     | 0.985  | 0.345  | 優秀 ✓  ← 改善！
+```
+
+**コミット推奨**
+```bash
+git add src/coeff_model.jl src/compare_xshift_models.jl CHANGELOG.md JensenBastankhah_Plan.md
+git commit -m "Improve x_shift regression: extended basis (R²=0.985)
+
+- Changed x_shift from basic basis to extended basis [1, I, C, I·C, 1/I, C/I]
+- R² improved from 0.467 to 0.985 (+111%)
+- RMSE reduced from 2.024 to 0.345 (-83%)
+- Added compare_xshift_models.jl for validation
+- All 6 parameters now achieve R²>0.85
+
+Phase 2 completed with high accuracy across all parameters.
+Ready for Phase 3 (two-region velocity reconstruction).
+"
+```
+
 ### 次回 TODO（フェーズ3）
 1. `src/plot_reconstructed_wake.jl` の二領域再構成実装
    - Jensen領域（x < x_shift）: `ΔU/U∞ = 1 - √{1 - Ct_eff/(1+2*kw*x)^2}`
@@ -174,3 +255,7 @@ Phase 1 completed. Ready for Phase 2 (coefficient regression).
    - σ(x) の連続化と可視化
 2. CLI オプション `--two-region` / `--single-gauss` の実装
 3. 全ケース検証と誤差評価（L2, 最大誤差）
+
+
+
+npm uninstall -g --force @anthropic-ai/claude-code

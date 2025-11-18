@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2025-01-18] x_shift回帰精度改善
+
+### 🚀 Improved
+- **x_shift回帰精度の劇的改善**
+  - 基本基底 `[1, I, C, I·C]` → 拡張基底 `[1, I, C, I·C, 1/I, C/I]` に変更
+  - R²: 0.467 → **0.985** (+111%)
+  - RMSE: 2.024 → **0.345** (-83%)
+  - 改善率: **82.9%**
+
+### 🔬 Analysis
+- **2つの改善案を比較検証**
+  - 案1: 非線形基底（拡張基底） → R²=0.985, RMSE=0.345 ⭐採用
+  - 案2: 区分モデル（I<0.1で分割） → R²=0.964, RMSE=0.524
+
+- **採用理由**
+  - 最高精度を達成
+  - 既存の `extended_combo` 関数を再利用可能
+  - 単一モデルで実装がシンプル
+  - 低乱流/高乱流どちらでも安定（RMSE≈0.34-0.35）
+
+### 📝 Changed
+- `src/coeff_model.jl`
+  - X_SHIFT_COEFFS を拡張基底の6パラメータに更新
+  - `coefficients_two_region` 関数で `extended_combo` を使用
+  - ドキュメントのR², RMSE値を更新
+
+### ✨ Added
+- `src/compare_xshift_models.jl`
+  - 改善案の比較検証スクリプト
+  - 非線形基底と区分モデルの性能評価
+  - 残差分析と推奨案の自動判定
+
+### 📈 Performance
+**全パラメータの回帰精度（31ケース）**:
+- Ct_eff: R²=0.945, RMSE=0.0215 ✓
+- sigmaJ0: R²=0.942, RMSE=0.0021 ✓
+- sigmaG0: R²=0.976, RMSE=0.0061 ✓
+- km: R²=0.972, RMSE=0.0010 ✓
+- kw: R²=0.858, RMSE=0.0055 ○
+- **x_shift: R²=0.985, RMSE=0.345 ✓** ← 改善！
+
+### 🎯 Impact
+- **二領域モデルの完成度向上**: 全6パラメータで高精度達成
+- **フェーズ3準備完了**: x_shift予測の信頼性が向上し、速度場再構成の精度改善が期待できる
+
+### 🔗 Related Files
+- `src/coeff_model.jl` - x_shift係数更新
+- `src/compare_xshift_models.jl` - 比較検証スクリプト（新規）
+- `src/test_coeff_model.jl` - 検証パス確認
+
+---
+
 ## [2025-01-18] フェーズ2: 係数回帰モデル更新
 
 ### ✨ Added
