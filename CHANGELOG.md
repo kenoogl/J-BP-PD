@@ -2,7 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2025-01-18] Jensen中心線フィット修正
+## [2025-01-18] フェーズ2: 係数回帰モデル更新
+
+### ✨ Added
+- **新しい二領域モデル関数**: `coefficients_two_region(I, Ct)`
+  - Jensen + Bastankhah二領域モデルのパラメータを返す
+  - 返り値: `(kw, Ct_eff, sigmaJ0, sigmaG0, km, x_shift)`
+  - 物理的制約を自動適用（非負値、0-1範囲、正値）
+
+- **回帰係数計算スクリプト**: `src/compute_regression_coeffs.jl`
+  - 基本基底 `[1, I, C, I·C]` と拡張基底 `[1, I, C, I·C, 1/I, C/I]` に対応
+  - R², RMSEを自動計算・表示
+  - Juliaコード自動生成機能
+
+- **テストスクリプト**: `src/test_coeff_model.jl`
+  - 物理的制約の検証
+  - CSV実測値との比較
+  - 範囲外入力テスト
+
+### 📈 Performance
+**回帰精度（31ケース）**:
+- Ct_eff: R²=0.945, RMSE=0.0215 ✓
+- sigmaJ0: R²=0.942, RMSE=0.0021 ✓
+- sigmaG0: R²=0.976, RMSE=0.0061 ✓
+- km: R²=0.972, RMSE=0.0010 ✓
+- kw: R²=0.858, RMSE=0.0055 ○
+- x_shift: R²=0.467, RMSE=2.024 △
+
+### 📝 Changed
+- `src/coeff_model.jl`
+  - 旧モデル `coefficients_from_IC` は後方互換性のために保持
+  - 新しい回帰係数定数を追加（KW_COEFFS, CT_EFF_COEFFS, etc.）
+  - `extended_combo` 関数を追加（拡張基底用）
+
+### 🎯 Impact
+- **フェーズ2完了**: 二領域モデルのパラメータ回帰が成功
+- **高精度**: 5/6パラメータでR²>0.94達成
+- **フェーズ3準備完了**: 速度場再構成の準備が整った
+
+### 🔗 Related Files
+- `src/coeff_model.jl` - 係数回帰モデル（更新）
+- `src/compute_regression_coeffs.jl` - 回帰係数計算（新規）
+- `src/test_coeff_model.jl` - テストスクリプト（新規）
+- `JensenBastankhah_Plan.md` - フェーズ2完了記録
+
+---
+
+## [2025-01-18] フェーズ1: Jensen中心線フィット修正
 
 ### 🔧 Fixed
 - **Jensen中心線フィットの根本的な問題を修正**

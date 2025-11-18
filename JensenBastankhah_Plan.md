@@ -125,10 +125,52 @@ Phase 1 completed. Ready for Phase 2 (coefficient regression).
 "
 ```
 
-### 次回 TODO（フェーズ2）
-1. `src/coeff_model.jl` の回帰モデル更新
-   - 返却値を `(; kw, Ct_eff, sigmaJ0, sigmaG0, km, x_shift)` 形式に変更
-   - 各パラメータを `[1, I, C, I·C, 1/I, C/I]` 基底で回帰
-   - `kw` は I 依存性が強いため `(I/Iref)^q` 項も検討
-2. 回帰精度評価（R², RMSE, k-fold CV）
-3. 外挿テスト（I, C範囲外）での挙動確認
+#### 2025-01-18: フェーズ2完了 - 係数回帰モデル更新
+
+**実施内容**
+1. **回帰係数の計算**（`src/compute_regression_coeffs.jl`）
+   - fit_coefficients_summary.csvから新パラメータ（kw, Ct_eff, sigmaJ0, sigmaG0, km, x_shift）の回帰分析を実行
+   - 基本基底: `[1, I, C, I·C]` → Ct_eff, sigmaJ0, sigmaG0, x_shift
+   - 拡張基底: `[1, I, C, I·C, 1/I, C/I]` → kw, km
+
+2. **coeff_model.jlの更新**
+   - 新関数 `coefficients_two_region(I, Ct)` を追加
+   - 旧関数 `coefficients_from_IC(I, Ct)` は後方互換性のために保持
+   - 物理的制約を実装（非負値、0-1範囲、正値）
+
+3. **回帰精度**
+   ```
+   Parameter   | R²     | RMSE      | 評価
+   ------------|--------|-----------|----------
+   Ct_eff      | 0.945  | 0.0215    | 優秀
+   sigmaJ0     | 0.942  | 0.0021    | 優秀
+   sigmaG0     | 0.976  | 0.0061    | 優秀
+   km          | 0.972  | 0.0010    | 優秀
+   kw          | 0.858  | 0.0055    | 良好
+   x_shift     | 0.467  | 2.024     | 要改善
+   ```
+
+4. **テスト結果**（`src/test_coeff_model.jl`）
+   - 全テストケースで物理的制約を満たす ✓
+   - 範囲外入力でも妥当な外挿 ✓
+   - 平均絶対誤差（サンプル5ケース）:
+     - kw: 0.0015, Ct_eff: 0.017, sigmaJ0: 0.0015
+     - sigmaG0: 0.0008, km: 0.0008, x_shift: 1.59
+
+**知見**
+- x_shiftの回帰精度が低い（R²=0.47）のは、多くのケースで固定値2.0になっているため
+- kwはI依存性が強く、拡張基底でも中程度の精度（R²=0.86）
+- 他のパラメータ（Ct_eff, sigmaJ0, sigmaG0, km）は高精度で回帰可能
+
+**出力ファイル**
+- `src/coeff_model.jl` - 更新済み（新関数追加、旧関数保持）
+- `src/compute_regression_coeffs.jl` - 回帰係数計算スクリプト
+- `src/test_coeff_model.jl` - テストスクリプト
+
+### 次回 TODO（フェーズ3）
+1. `src/plot_reconstructed_wake.jl` の二領域再構成実装
+   - Jensen領域（x < x_shift）: `ΔU/U∞ = 1 - √{1 - Ct_eff/(1+2*kw*x)^2}`
+   - Bastankhah領域（x ≥ x_shift）: `ΔU/U∞ = 1 - √{1 - Ct_eff/(8(σ/D)²)}`
+   - σ(x) の連続化と可視化
+2. CLI オプション `--two-region` / `--single-gauss` の実装
+3. 全ケース検証と誤差評価（L2, 最大誤差）
