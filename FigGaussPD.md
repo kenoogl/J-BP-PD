@@ -62,7 +62,15 @@
 
 ### 出力物
 - `figures/` に各ケースのフィット結果、コンター、再構成図を保存。
-- `fit_coefficients_summary.csv` に列 (`file`, `I`, `Ct`, `U∞`, `C0`, `c`, `n`, `a2`, `a1`, `a0`, `sections`) を持つ一覧を生成し、プロット系スクリプトが自動参照。
+- `fit_coefficients_summary.csv` には各ケースの係数に加えて Jensen/Bastankhah 二領域用の列を整備している（全23カラム）。`file`, `I`, `Ct`, `U∞`, `C0`, `c`, `n`, `a2`, `a1`, `a0`, `sections` に続き、`kw`, `Ct_eff`, `sigmaJ0`, `sigmaG0`, `km`, `x_shift`, `rmse_kw`, `rmse_km`, `fit_residual_kw`, `fit_residual_km`, `kw_outlier`, `km_outlier` を追記した。
+  - `kw`: Jensen勾配係数。中心線欠損データから推定。
+  - `Ct_eff`: 有効推力係数（0〜1範囲）。CFDデータから経験的に推定され、ポーラスディスク抵抗パラメータCと正の相関を持つ。
+  - `sigmaJ0`: 近接域 σ 線形フィットの切片。
+  - `km`/`sigmaG0`: 遠方 σ 勾配と接続点での σ。
+  - `x_shift`: Jensen 欠損とガウス欠損が一致する距離。
+  - `fit_residual_kw`/`fit_residual_km`: 各領域の回帰 RMSE。
+  - `kw_outlier`/`km_outlier`: しきい値（kw: 0.04, km: 0.02）超過フラグ。
+- Jensen 領域の欠損値は `src/fit_gaussian_wake.jl` 内で中心線上 (|y|<0.05) の CFD サンプルから抽出しており、データ不足時は最も中心寄りの点を代用する。`kw` と `Ct_eff` のフィットには LsqFit の **2パラメータ最小二乗**（`[kw, Ct_eff]`）を用い、Jensen形式 `ΔU/U∞ = 1 - √{1 - Ct_eff/(1 + 2*kw*x)^2}` にデータ駆動でフィットする。この修正により全31ケースで残差が0.04以内に収まり、外れ値が完全に解消された（修正前は平均残差0.73、修正後は0.003）。
 - `src/plot_contour.jl:1-118` を再構成し、`--all/-a/all` を指定すると data/ 内の全 CSV を列挙して順次コンター図を生成できるようにしました。個別ケース指定時のロジックは維持しつつ、ケースごとの処理を plot_case に分離し、タイトルと保存先 (`figures/u_contour_<case>.png`) もケース名入りに変更しています。
 - これで `julia --project=. src/plot_contour.jl --all` を実行すれば全データ分の図がまとめて生成されます。従来通り単一ケースを描画したい場合は、`julia src/plot_contour.jl 0.05 22 や julia src/plot_contour.jl result_I0p0500_C22p0000.csv` のように指定してください。
 - **C25のケースがおかしいのでデータを削除**

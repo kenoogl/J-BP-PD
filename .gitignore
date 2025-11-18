@@ -1,2 +1,14 @@
+# データと結果
 *.csv
 *.png
+
+# Julia環境
+.julia/
+.julia_depot/
+*.toml.bak
+
+# MCP設定（ローカル環境固有）
+.mcp.json
+
+# OS固有
+.DS_Store

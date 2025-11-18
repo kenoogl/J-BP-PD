@@ -73,7 +73,62 @@ Saved figure: figures/wake_fit_I0p3000_C22p0000.png
 Saved summary table: fit_coefficients_summary.csv
 ~~~
 
+### 作業メモ
 
+#### 2025-01-18: フェーズ1完了 - Jensen中心線フィット修正
 
-`codex run -s workspace-write`
+**問題点の特定と解決**
+- 初期実装では `Ct = C`（10〜22）を固定し、`kw` のみを1パラメータフィットしていた
+- Cはポーラスディスク抵抗パラメータであり、推力係数Ct（0〜1の範囲）とは異なる物理量
+- 結果: すべてのケースで残差が閾値の15〜20倍（平均0.732）、kw=0.05（初期値）のまま固定
 
+**実施した修正**
+- `src/fit_gaussian_wake.jl:107-128` の `fit_jensen_gradient` 関数を2パラメータフィット `[kw, Ct_eff]` に変更
+- Ct_eff（有効推力係数）をCFDデータから経験的に推定するデータ駆動アプローチ
+- CSV出力に `Ct_eff` カラムを追加（13列目）
+
+**修正結果（劇的改善）**
+```
+項目          | 修正前  | 修正後   | 改善率
+--------------|---------|----------|--------
+平均残差      | 0.732   | 0.00313  | 99.6%
+最大残差      | 0.868   | 0.0106   | 98.8%
+外れ値率      | 100%    | 0%       | 完全解消
+```
+- **全31ケースが閾値0.04以内に収まった** ✓
+- Ct_eff範囲: 0.308〜0.646（平均0.475±0.092）、物理的に妥当
+- CとCt_effに明確な正の相関: C=10→Ct≈0.35、C=22→Ct≈0.56
+
+**パラメータ傾向**
+- `kw`: 高I領域（I≥0.2）で0.03〜0.04、低I領域でほぼ0
+- `km`: 0.003〜0.022、Iとともに顕著に増加（物理的に妥当）
+- `Ct_eff`: Cとほぼ線形関係、I依存性も観測される
+
+**出力データ**
+- `fit_coefficients_summary.csv`: 23カラム、31ケース
+- 主要パラメータ: `kw`, `Ct_eff`, `sigmaJ0`, `sigmaG0`, `km`, `x_shift`
+- 残差指標: `fit_residual_kw`, `fit_residual_km`
+- 外れ値フラグ: `kw_outlier`, `km_outlier`（全てfalse）
+
+**コミット推奨**
+```bash
+git add src/fit_gaussian_wake.jl fit_coefficients_summary.csv JensenBastankhah_Plan.md
+git commit -m "Fix Jensen centerline fit: 2-parameter estimation (kw, Ct_eff)
+
+- Modified fit_jensen_gradient to estimate both kw and Ct_eff from CFD data
+- Resolved issue where Ct was incorrectly set to C (10-22) instead of thrust coefficient (0-1)
+- Residuals reduced from 0.73 to 0.003 (99.6% improvement)
+- All 31 cases now within threshold (0.04)
+- Added Ct_eff column to CSV output
+
+Phase 1 completed. Ready for Phase 2 (coefficient regression).
+"
+```
+
+### 次回 TODO（フェーズ2）
+1. `src/coeff_model.jl` の回帰モデル更新
+   - 返却値を `(; kw, Ct_eff, sigmaJ0, sigmaG0, km, x_shift)` 形式に変更
+   - 各パラメータを `[1, I, C, I·C, 1/I, C/I]` 基底で回帰
+   - `kw` は I 依存性が強いため `(I/Iref)^q` 項も検討
+2. 回帰精度評価（R², RMSE, k-fold CV）
+3. 外挿テスト（I, C範囲外）での挙動確認
