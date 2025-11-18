@@ -209,6 +209,111 @@ function compute_two_region_wake(x::Real, r::Real, params::NamedTuple, U∞::Rea
     return U∞ * (1 - ΔU)
 end
 
+"""
+    create_two_region_analysis_plots(df, U∞, params, xv, case_label, fig_dir)
+
+二領域モデルの詳細解析プロットを作成
+
+生成される図:
+1. σ(x) 推移プロット（Jensen/Bastankhah領域を色分け）
+2. 中心線速度欠損プロット（CFDデータとの比較）
+"""
+function create_two_region_analysis_plots(df::DataFrame, U∞::Float64, params::NamedTuple,
+                                          xv::AbstractRange, case_label::String, fig_dir::String)
+    (; kw, Ct_eff, sigmaJ0, sigmaG0, km, x_shift) = params
+
+    # =============================================================================
+    # 1. σ(x) 推移プロット
+    # =============================================================================
+    sigma_plot = plot(
+        xlabel = "x/D",
+        ylabel = "σ/D",
+        title = "Wake Width Evolution - $(case_label)",
+        legend = :topleft,
+        size = (900, 600),
+        dpi = 300
+    )
+
+    # Jensen領域
+    x_jensen = filter(x -> x < x_shift, xv)
+    if !isempty(x_jensen)
+        sigma_jensen = [compute_jensen_sigma(x, sigmaJ0, kw) for x in x_jensen]
+        plot!(sigma_plot, x_jensen, sigma_jensen, lw=3, lc=:red, label="Jensen region")
+
+        # Jensen領域の背景色
+        vspan!(sigma_plot, [0, x_shift], alpha=0.1, color=:red, label="")
+    end
+
+    # Bastankhah領域
+    x_bastankhah = filter(x -> x >= x_shift, xv)
+    if !isempty(x_bastankhah)
+        sigma_bastankhah = [compute_bastankhah_sigma(x, x_shift, sigmaG0, km) for x in x_bastankhah]
+        plot!(sigma_plot, x_bastankhah, sigma_bastankhah, lw=3, lc=:blue, label="Bastankhah region")
+
+        # Bastankhah領域の背景色
+        vspan!(sigma_plot, [x_shift, maximum(xv)], alpha=0.1, color=:blue, label="")
+    end
+
+    # x_shift位置
+    vline!(sigma_plot, [x_shift], lw=2, lc=:black, ls=:dash, label="x_shift=$(round(x_shift, digits=2))")
+
+    # 接続点をマーク
+    scatter!(sigma_plot, [x_shift], [sigmaG0], mc=:green, ms=8, label="Connection point")
+
+    sigma_path = joinpath(fig_dir, "sigma_evolution_$(case_label).png")
+    savefig(sigma_plot, sigma_path)
+    println("✅ Saved: $(sigma_path)")
+
+    # =============================================================================
+    # 2. 中心線速度欠損プロット（CFDとの比較）
+    # =============================================================================
+    deficit_centerline_plot = plot(
+        xlabel = "x/D",
+        ylabel = "ΔU/U∞",
+        title = "Centerline Velocity Deficit - $(case_label)",
+        legend = :topright,
+        size = (900, 600),
+        dpi = 300
+    )
+
+    # CFDデータから中心線（r≈0）の速度欠損を抽出
+    df_centerline = df[abs.(df.y) .< 0.1, :]  # r < 0.1 を中心線とみなす
+    if !isempty(df_centerline)
+        x_cfd = df_centerline.x
+        deficit_cfd = (U∞ .- df_centerline.u) ./ U∞
+        scatter!(deficit_centerline_plot, x_cfd, deficit_cfd,
+                 mc=:gray, ms=3, alpha=0.5, label="CFD data")
+    end
+
+    # モデル予測（Jensen領域）
+    if !isempty(x_jensen)
+        deficit_jensen = [compute_jensen_deficit(x, kw, Ct_eff) for x in x_jensen]
+        plot!(deficit_centerline_plot, x_jensen, deficit_jensen,
+              lw=3, lc=:red, label="Jensen model")
+    end
+
+    # モデル予測（Bastankhah領域）
+    if !isempty(x_bastankhah)
+        deficit_bastankhah = [begin
+            σ = compute_bastankhah_sigma(x, x_shift, sigmaG0, km)
+            compute_bastankhah_deficit(σ, Ct_eff)
+        end for x in x_bastankhah]
+        plot!(deficit_centerline_plot, x_bastankhah, deficit_bastankhah,
+              lw=3, lc=:blue, label="Bastankhah model")
+    end
+
+    # 領域の背景色
+    vspan!(deficit_centerline_plot, [0, x_shift], alpha=0.1, color=:red, label="")
+    vspan!(deficit_centerline_plot, [x_shift, maximum(xv)], alpha=0.1, color=:blue, label="")
+
+    # x_shift位置
+    vline!(deficit_centerline_plot, [x_shift], lw=2, lc=:black, ls=:dash, label="")
+
+    deficit_centerline_path = joinpath(fig_dir, "deficit_centerline_$(case_label).png")
+    savefig(deficit_centerline_plot, deficit_centerline_path)
+    println("✅ Saved: $(deficit_centerline_path)")
+end
+
 function reconstruct_case(data_path::AbstractString, I_token::AbstractString, C_token::AbstractString,
                           coef_mode::Symbol, wake_model::Symbol, summary_df::Union{DataFrame,Nothing})
     case_label = "I$(I_token)_C$(C_token)"
@@ -293,6 +398,16 @@ function reconstruct_case(data_path::AbstractString, I_token::AbstractString, C_
     )
     plot!([0, maximum(xv)], [0, 0], lw=2, lc=:white, label="centerline")
 
+    # 二領域モデルの場合、x_shift位置を表示
+    if wake_model == WAKE_MODEL_TWO_REGION
+        x_shift_val = if coef_mode == COEF_MODE_SUMMARY
+            lookup_two_region_coefficients(summary_df, I_val, Ct_val).x_shift
+        else
+            coefficients_two_region(I_val, Ct_val; check_range=true).x_shift
+        end
+        vline!([x_shift_val], lw=2, lc=:cyan, ls=:dash, label="x_shift=$(round(x_shift_val, digits=2))")
+    end
+
     mkpath(FIG_DIR)
     contour_path = joinpath(FIG_DIR, "wake$(suffix)_$(case_label).png")
     savefig(contour_path)
@@ -321,6 +436,16 @@ function reconstruct_case(data_path::AbstractString, I_token::AbstractString, C_
     profile_path = joinpath(FIG_DIR, "profile$(suffix)_$(case_label).png")
     savefig(profile_plot, profile_path)
     println("✅ Saved: $(profile_path)")
+
+    # 二領域モデルの場合、追加の詳細可視化を作成
+    if wake_model == WAKE_MODEL_TWO_REGION
+        params = if coef_mode == COEF_MODE_SUMMARY
+            lookup_two_region_coefficients(summary_df, I_val, Ct_val)
+        else
+            coefficients_two_region(I_val, Ct_val; check_range=true)
+        end
+        create_two_region_analysis_plots(df, U∞, params, xv, case_label, FIG_DIR)
+    end
 end
 
 function main()
