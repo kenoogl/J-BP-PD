@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 720pt;
+      height: 405pt;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .header {
+      background-color: #2a5298;
+      color: white;
+      padding: 15pt 30pt;
+    }
+    h1 {
+      font-size: 32pt;
+      margin: 0;
+      font-weight: bold;
+    }
+    .content {
+      padding: 20pt 40pt;
+      display: flex;
+    }
+    .left {
+      flex: 1;
+      padding-right: 15pt;
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    h2 {
+      font-size: 22pt;
+      color: #2a5298;
+      margin: 15pt 0 10pt 0;
+      font-weight: bold;
+    }
+    p {
+      font-size: 17pt;
+      line-height: 1.6;
+      margin: 8pt 0;
+    }
+    ul {
+      font-size: 16pt;
+      line-height: 1.7;
+      margin: 8pt 0;
+      padding-left: 25pt;
+    }
+    .highlight {
+      font-size: 28pt;
+      color: #2a5298;
+      font-weight: bold;
+      text-align: center;
+      margin: 15pt 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>結果 1: データセット概要</h1>
+  </div>
+  <div class="content">
+    <div class="left">
+      <h2>シミュレーションケース</h2>
+      <p class="highlight">31ケース</p>
+
+      <h2>パラメータ範囲</h2>
+      <ul>
+        <li><strong>乱流強度 I:</strong> 0.01 ~ 0.30</li>
+        <li><strong>抵抗係数 C:</strong> 10 ~ 25</li>
+      </ul>
+
+      <h2>各ケースから抽出</h2>
+      <ul>
+        <li>6つのガウス係数</li>
+        <li>複数断面の速度場データ</li>
+        <li>上流速度 U∞</li>
+      </ul>
+    </div>
+    <div class="right">
+      <p>[速度欠損プロファイル図]</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 720pt;
+      height: 405pt;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .header {
+      background-color: #27ae60;
+      color: white;
+      padding: 15pt 30pt;
+    }
+    h1 {
+      font-size: 32pt;
+      margin: 0;
+      font-weight: bold;
+    }
+    .content {
+      padding: 20pt 40pt;
+      display: flex;
+    }
+    .left {
+      flex: 1;
+      padding-right: 15pt;
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    h2 {
+      font-size: 22pt;
+      color: #27ae60;
+      margin: 15pt 0 10pt 0;
+      font-weight: bold;
+    }
+    p {
+      font-size: 15pt;
+      line-height: 1.4;
+      margin: 4pt 0;
+    }
+    .small {
+      font-size: 13pt;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>分析 1: 残差統計</h1>
+  </div>
+  <div class="content">
+    <div class="left">
+      <h2>RMSE (二乗平均平方根誤差)</h2>
+      <p><strong>C₀:</strong> 9.15 × 10⁻³</p>
+      <p><strong>c:</strong> 2.68 × 10⁻²</p>
+      <p><strong>n:</strong> 55.9 (最大)</p>
+      <p><strong>a₂:</strong> 1.04 × 10⁻⁴</p>
+      <p><strong>a₁:</strong> 4.40 × 10⁻³</p>
+      <p><strong>a₀:</strong> 7.04 × 10⁻³</p>
+
+      <h2>残差の特徴</h2>
+      <p>平均値: ほぼゼロ（バイアスなし）</p>
+      <p class="small">C₀, c, a₂, a₁, a₀: 非常に小さい残差</p>
+      <p class="small">n: 相対的に大きな残差 → 非線形性が強い</p>
+    </div>
+    <div class="right">
+      <p>[残差 vs I の図]</p>
+    </div>
+  </div>
+</body>
+</html>

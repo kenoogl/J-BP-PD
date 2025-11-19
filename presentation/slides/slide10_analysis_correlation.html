@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 720pt;
+      height: 405pt;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .header {
+      background-color: #27ae60;
+      color: white;
+      padding: 15pt 30pt;
+    }
+    h1 {
+      font-size: 32pt;
+      margin: 0;
+      font-weight: bold;
+    }
+    .content {
+      padding: 25pt 40pt;
+    }
+    h2 {
+      font-size: 22pt;
+      color: #27ae60;
+      margin: 15pt 0 10pt 0;
+      font-weight: bold;
+    }
+    p {
+      font-size: 17pt;
+      line-height: 1.6;
+      margin: 8pt 0;
+    }
+    ul {
+      font-size: 16pt;
+      line-height: 1.7;
+      margin: 10pt 0;
+      padding-left: 25pt;
+    }
+    .highlight {
+      background-color: #d4edda;
+      padding: 2pt 6pt;
+      border-radius: 3pt;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>分析 2: 係数間の相関</h1>
+  </div>
+  <div class="content">
+    <h2>強い相関関係 (|r| &gt; 0.7)</h2>
+    <ul>
+      <li><span class="highlight">c ↔ a₂:</span> r = -0.987 (非常に強い負の相関)</li>
+      <li><span class="highlight">a₂ ↔ a₁:</span> r = -0.995 (非常に強い負の相関)</li>
+      <li><span class="highlight">c ↔ a₁:</span> r = 0.973 (非常に強い正の相関)</li>
+      <li>c ↔ a₀: r = 0.789</li>
+      <li>n ↔ a₂: r = 0.721</li>
+      <li>n ↔ a₁: r = -0.759</li>
+      <li>a₂ ↔ a₀: r = -0.742</li>
+      <li>a₁ ↔ a₀: r = 0.721</li>
+    </ul>
+
+    <h2>考察</h2>
+    <p>速度欠損の減衰 (c, n) と後流幅の拡大 (a₂, a₁, a₀) は密接に関連</p>
+    <p>これらの相関関係は物理的な後流発達過程を反映</p>
+  </div>
+</body>
+</html>

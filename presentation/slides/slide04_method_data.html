@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 720pt;
+      height: 405pt;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .header {
+      background-color: #1e3c72;
+      color: white;
+      padding: 15pt 30pt;
+    }
+    h1 {
+      font-size: 32pt;
+      margin: 0;
+      font-weight: bold;
+    }
+    .content {
+      padding: 30pt 40pt;
+    }
+    h2 {
+      font-size: 22pt;
+      color: #1e3c72;
+      margin: 20pt 0 12pt 0;
+      font-weight: bold;
+    }
+    p {
+      font-size: 18pt;
+      line-height: 1.6;
+      margin: 10pt 0;
+    }
+    ul {
+      font-size: 17pt;
+      line-height: 1.7;
+      margin: 10pt 0;
+      padding-left: 25pt;
+    }
+    li {
+      margin: 6pt 0;
+    }
+    .highlight {
+      background-color: #fff3cd;
+      padding: 2pt 6pt;
+      border-radius: 3pt;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>方法 1: データ取得</h1>
+  </div>
+  <div class="content">
+    <h2>RANS-PDシミュレーション</h2>
+    <ul>
+      <li>Reynolds-Averaged Navier-Stokes方程式に基づく数値シミュレーション</li>
+      <li>ポーラスディスクモデルで風力タービンをモデル化</li>
+      <li>抵抗係数 C により後流強度を制御</li>
+    </ul>
+
+    <h2>パラメータ空間の探索</h2>
+    <ul>
+      <li><span class="highlight">31ケース</span>のシミュレーション実施</li>
+      <li>乱流強度 I: 0.01 ~ 0.30 (6水準)</li>
+      <li>抵抗係数 C: 10 ~ 25 (6水準)</li>
+      <li>各ケースで速度場 u(x, r) を取得</li>
+    </ul>
+
+    <h2>データ構造</h2>
+    <p>各断面における半径方向速度プロファイル → ガウス関数へのフィッティング</p>
+  </div>
+</body>
+</html>

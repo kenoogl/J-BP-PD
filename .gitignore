@@ -12,3 +12,7 @@
 
 # OS固有
 .DS_Store
+
+# Node.js
+node_modules/
+package-lock.json

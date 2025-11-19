@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 720pt;
+      height: 405pt;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .header {
+      background-color: #1e3c72;
+      color: white;
+      padding: 15pt 30pt;
+    }
+    h1 {
+      font-size: 32pt;
+      margin: 0;
+      font-weight: bold;
+    }
+    .content {
+      padding: 30pt 40pt;
+    }
+    h2 {
+      font-size: 22pt;
+      color: #1e3c72;
+      margin: 18pt 0 12pt 0;
+      font-weight: bold;
+    }
+    p {
+      font-size: 17pt;
+      line-height: 1.6;
+      margin: 8pt 0;
+    }
+    .equation {
+      font-size: 17pt;
+      font-family: 'Times New Roman', serif;
+      font-style: italic;
+      text-align: center;
+      margin: 10pt 0;
+      padding: 8pt;
+      background-color: #f0f4f8;
+      border-left: 4pt solid #1e3c72;
+    }
+    ul {
+      font-size: 17pt;
+      line-height: 1.7;
+      margin: 10pt 0;
+      padding-left: 25pt;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>方法 3: 回帰モデル</h1>
+  </div>
+  <div class="content">
+    <h2>線形回帰モデル (C₀, c, a₂, a₁, a₀)</h2>
+    <p class="equation">coeff = β₀ + β₁·I + β₂·C + β₃·I·C</p>
+    <p>基底関数: [1, I, C, I·C]</p>
+
+    <h2>拡張線形回帰モデル (n)</h2>
+    <p class="equation">n = β₀ + β₁·I + β₂·C + β₃·I·C + (β₄ + β₅·C)/I + (β₆ + β₇·C)/I²</p>
+    <p>基底関数: [1, I, C, I·C, 1/I, C/I, 1/I², C/I²]</p>
+
+    <h2>予測機能</h2>
+    <ul>
+      <li>任意の (I, C) に対して6係数を予測</li>
+      <li>予測された係数から速度欠損プロファイルを再構成</li>
+      <li>実測範囲: I ∈ [0.01, 0.30], C ∈ [10, 25]</li>
+    </ul>
+  </div>
+</body>
+</html>

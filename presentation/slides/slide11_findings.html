@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 720pt;
+      height: 405pt;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .header {
+      background-color: #e67e22;
+      color: white;
+      padding: 15pt 30pt;
+    }
+    h1 {
+      font-size: 32pt;
+      margin: 0;
+      font-weight: bold;
+    }
+    .content {
+      padding: 30pt 40pt;
+    }
+    h2 {
+      font-size: 22pt;
+      color: #e67e22;
+      margin: 18pt 0 12pt 0;
+      font-weight: bold;
+    }
+    ul {
+      font-size: 17pt;
+      line-height: 1.8;
+      margin: 10pt 0;
+      padding-left: 25pt;
+    }
+    li {
+      margin: 10pt 0;
+    }
+    .highlight {
+      background-color: #ffeaa7;
+      padding: 2pt 6pt;
+      border-radius: 3pt;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>主な発見</h1>
+  </div>
+  <div class="content">
+    <h2>モデル性能</h2>
+    <ul>
+      <li><span class="highlight">全係数でR² &gt; 0.87</span>を達成し、高精度な予測が可能</li>
+      <li>C₀（中心線速度欠損の初期値）が最も高精度（R² = 0.988）</li>
+      <li>n（減衰指数）は非線形性が強く、拡張基底が有効</li>
+    </ul>
+
+    <h2>係数の物理的関係</h2>
+    <ul>
+      <li>速度欠損の減衰パラメータ（c, n）と後流幅の拡大（a₂, a₁, a₀）は強く相関</li>
+      <li>乱流強度 I が増加すると後流回復が促進される傾向</li>
+      <li>抵抗係数 C が増加すると初期速度欠損が増大</li>
+    </ul>
+
+    <h2>実用性</h2>
+    <ul>
+      <li>任意の (I, C) に対して即座に後流予測が可能</li>
+      <li>高コストなCFDシミュレーションの代替手段として有効</li>
+    </ul>
+  </div>
+</body>
+</html>

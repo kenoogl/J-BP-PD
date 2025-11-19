@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 720pt;
+      height: 405pt;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .header {
+      background-color: #2a5298;
+      color: white;
+      padding: 15pt 30pt;
+    }
+    h1 {
+      font-size: 32pt;
+      margin: 0;
+      font-weight: bold;
+    }
+    .content {
+      padding: 20pt 40pt;
+      display: flex;
+    }
+    .left {
+      flex: 1;
+      padding-right: 15pt;
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    h2 {
+      font-size: 22pt;
+      color: #2a5298;
+      margin: 15pt 0 10pt 0;
+      font-weight: bold;
+    }
+    p {
+      font-size: 16pt;
+      line-height: 1.5;
+      margin: 6pt 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>結果 2: 回帰モデルの性能</h1>
+  </div>
+  <div class="content">
+    <div class="left">
+      <h2>決定係数 R²</h2>
+      <p><strong>C₀:</strong> R² = 0.9879 (最高精度)</p>
+      <p><strong>c:</strong>  R² = 0.9749</p>
+      <p><strong>n:</strong>  R² = 0.9000</p>
+      <p><strong>a₂:</strong> R² = 0.9495</p>
+      <p><strong>a₁:</strong> R² = 0.9362</p>
+      <p><strong>a₀:</strong> R² = 0.8783 (最低精度)</p>
+
+      <h2>性能評価</h2>
+      <p>全ての係数でR² &gt; 0.87を達成</p>
+      <p>特にC₀とcは高精度な予測が可能</p>
+    </div>
+    <div class="right">
+      <p>[予測値 vs 実測値の図]</p>
+    </div>
+  </div>
+</body>
+</html>

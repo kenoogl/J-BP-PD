@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 720pt;
+      height: 405pt;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .header {
+      background-color: #1e3c72;
+      color: white;
+      padding: 15pt 30pt;
+    }
+    h1 {
+      font-size: 32pt;
+      margin: 0;
+      font-weight: bold;
+    }
+    .content {
+      padding: 30pt 40pt;
+    }
+    h2 {
+      font-size: 20pt;
+      color: #1e3c72;
+      margin: 15pt 0 10pt 0;
+      font-weight: bold;
+    }
+    p {
+      font-size: 18pt;
+      line-height: 1.6;
+      margin: 10pt 0;
+    }
+    .equation {
+      font-size: 20pt;
+      font-family: 'Times New Roman', serif;
+      font-style: italic;
+      text-align: center;
+      margin: 15pt 0;
+      padding: 10pt;
+      background-color: #f0f4f8;
+      border-left: 4pt solid #1e3c72;
+    }
+    ul {
+      font-size: 16pt;
+      line-height: 1.8;
+      margin: 5pt 0;
+      padding-left: 25pt;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>ガウス型速度欠損モデル</h1>
+  </div>
+  <div class="content">
+    <h2>速度場の表現</h2>
+    <p class="equation">u(x, r) = U∞ × [1 - C(x) × exp(-r² / (2σ(x)²))]</p>
+
+    <h2>係数の定義</h2>
+    <p><strong>C(x)</strong>: 中心線速度欠損 (Power-law decay)</p>
+    <p class="equation">C(x) = C₀ × (1 + c·x)^(-n)</p>
+
+    <p><strong>σ(x)</strong>: 後流幅 (Polynomial expansion)</p>
+    <p class="equation">σ(x) = a₂·x² + a₁·x + a₀</p>
+
+    <h2>パラメータ</h2>
+    <ul>
+      <li><strong>I</strong>: 乱流強度 (0.01 ~ 0.30)</li>
+      <li><strong>C</strong>: ポーラスディスク抵抗係数 (10 ~ 25)</li>
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "gaussian-wake-presentation",
+  "version": "1.0.0",
+  "description": "PowerPoint presentation generator for Gaussian wake model",
+  "main": "generate_presentation.js",
+  "scripts": {
+    "build": "node generate_presentation.js"
+  },
+  "dependencies": {
+    "pptxgenjs": "^3.12.0",
+    "html2pptx": "latest",
+    "playwright": "^1.40.0"
+  }
+}

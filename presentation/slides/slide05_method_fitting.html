@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 720pt;
+      height: 405pt;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .header {
+      background-color: #1e3c72;
+      color: white;
+      padding: 15pt 30pt;
+    }
+    h1 {
+      font-size: 32pt;
+      margin: 0;
+      font-weight: bold;
+    }
+    .content {
+      padding: 30pt 40pt;
+    }
+    h2 {
+      font-size: 22pt;
+      color: #1e3c72;
+      margin: 18pt 0 12pt 0;
+      font-weight: bold;
+    }
+    p {
+      font-size: 17pt;
+      line-height: 1.6;
+      margin: 8pt 0;
+    }
+    ol {
+      font-size: 17pt;
+      line-height: 1.7;
+      margin: 10pt 0;
+      padding-left: 25pt;
+    }
+    li {
+      margin: 8pt 0;
+    }
+    .equation {
+      font-size: 18pt;
+      font-family: 'Times New Roman', serif;
+      font-style: italic;
+      text-align: center;
+      margin: 12pt 0;
+      padding: 8pt;
+      background-color: #f0f4f8;
+      border-left: 4pt solid #1e3c72;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>方法 2: ガウスフィッティング</h1>
+  </div>
+  <div class="content">
+    <h2>フィッティング手順</h2>
+    <ol>
+      <li>各断面 x における半径方向速度 u(x, r) を取得</li>
+      <li>ガウス関数にフィッティングして係数 C(x), σ(x) を抽出</li>
+      <li>C(x) を Power-law モデルにフィッティング → C₀, c, n</li>
+      <li>σ(x) を2次多項式にフィッティング → a₂, a₁, a₀</li>
+    </ol>
+
+    <h2>最適化手法</h2>
+    <p>Levenberg-Marquardt法による非線形最小二乗法</p>
+    <p class="equation">minimize Σ [u_data(x, r) - u_model(x, r)]²</p>
+
+    <h2>出力</h2>
+    <p>各ケースの6係数: (C₀, c, n, a₂, a₁, a₀)</p>
+  </div>
+</body>
+</html>
